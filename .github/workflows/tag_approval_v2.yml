@@ -19,7 +19,7 @@ jobs:
 
      - name: Create a pull request
        if: steps.check_tag.outputs.tag_name != ''
-       uses: actions/create-pull-request@v1
+       uses: peter-evans/create-pull-request@v7
        with:
          token: ${{ secrets.GITHUB_TOKEN }}
          title: "[Tag Approval] Tag: ${{ steps.check_tag.outputs.tag_name }}"

@@ -1,0 +1,30 @@
+name: Tag Approval
+
+on:
+ push:
+   tags:
+     - 'v1*'
+
+jobs:
+ approve_tag:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+
+     - name: Check tag name
+       id: check_tag
+       run: |
+         echo "::set-output name=tag_name::$(echo "${{ github.ref }}" | cut -d/ -f3)"
+
+     - name: Create a pull request
+       if: steps.check_tag.outputs.tag_name != ''
+       uses: peter-jansen/create-pull-request@v3
+       with:
+         token: ${{ secrets.GITHUB_TOKEN }}
+         title: "[Tag Approval] Tag: ${{ steps.check_tag.outputs.tag_name }}"
+         body: "This tag requires approval before merging."
+         labels: "tag-approval"
+         head: ${{ github.ref }}
+         base: main # Adjust to your default branch
+         commit_message: "Trigger tag approval"
